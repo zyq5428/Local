@@ -1,6 +1,6 @@
 int uboot_main()
 {
-	unsigned char buff[1024*4];
+	int num;
 
 #ifdef MMU_ON
 	mmu_init();
@@ -13,22 +13,41 @@ int uboot_main()
 	irq_init();
 
 	led_on();
+	
+	uart_init();
+	
+	uart_put_char('H');
+	uart_put_char('E');
 
-	Erase_NandFlash(128*1+1);
+	while(1) {
+		printf("\n*****************************\n\r");
+		printf("\n************U-Boot***********\n\r");
+		printf("[1]:Download Linux Kerel from TFTP server!\n\r");
+		printf("[2]:Boot Linux from RAM!\n\r");
+		printf("[3]:Boot Linux from Nand Flash!\n\r");
+		printf("\n Plese Select:");
 
-	buff[0] = 100;
+		scanf("%d", &num);
 
-	NandFlash_PageWrite(128*1+1,buff);
+		switch (num) {
+			case 1:
+				//tftp_load();
+				break;
 
-	buff[0] = 10;
+			case 2:
+				//boot_linux_arm();
+				break;
 
-	NandFlash_PageRead(128*1+1,buff);
+			case 3:
+				//boot_linux_nand();
+				break;
 
-	if (buff[0] == 100) {
-		led_off();
+			default:
+				printf("Error: Wrong selection!\n\r");
+				break;
+		}
+		 
 	}
-
-	while(1) ;
 
 	return 0;
 }

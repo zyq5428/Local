@@ -1,4 +1,4 @@
-OBJS := start.o mem.o main.o lib/lib.o dev/dev.o
+OBJS := start.o mem.o main.o dev/dev.o lib/lib.o
 
 CFLAGS := -fno-builtin -I$(shell pwd)/include
 export CFLAGS
@@ -13,7 +13,7 @@ gboot.elf : $(OBJS)
 	arm-linux-gcc -g -c $^
 
 %.o : %.c
-	arm-linux-gcc $(CFLAGS) -c $^
+	arm-linux-gcc -g $(CFLAGS) -c $^
 
 lib/lib.o :
 	make -C lib all

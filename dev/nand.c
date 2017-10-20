@@ -1,8 +1,8 @@
 #define NFCONF (*((volatile unsigned long *)0x70200000))
 #define NFCONT (*((volatile unsigned long *)0x70200004))
-#define NFCMMD (*((volatile unsigned long *)0x70200008))
-#define NFSTAT (*((volatile unsigned long *)0x70200028))
-#define NFADDR (*((volatile unsigned long *)0x7020000c))
+#define NFCMMD (*((volatile unsigned char *)0x70200008))
+#define NFSTAT (*((volatile unsigned char *)0x70200028))
+#define NFADDR (*((volatile unsigned char *)0x7020000c))
 #define NFDATA (*((volatile unsigned char *)0x70200010))
 
 
@@ -21,7 +21,7 @@ void clear_RnB(void)
 	NFSTAT |= (1 << 4);
 }
 
-void send_command(unsigned long cmd)
+void send_command(unsigned char cmd)
 {
 	NFCMMD = cmd;
 }
@@ -31,7 +31,7 @@ void wait_RnB(void)
 	while (!(NFSTAT & 0x1)) ;
 }
 
-void send_addr(unsigned long addr)
+void send_addr(unsigned char addr)
 {
 	NFADDR = addr;
 }

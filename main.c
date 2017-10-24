@@ -6,6 +6,8 @@ int uboot_main()
 	mmu_init();
 #endif
 
+	uart_init();
+	
 	led_init();
 
 	button_init_ext_int();
@@ -14,10 +16,8 @@ int uboot_main()
 
 	led_on();
 	
-	uart_init();
-	
-	uart_put_char('H');
-	uart_put_char('E');
+	dma_init();
+	dma_start();
 
 	while(1) {
 		printf("\n*****************************\n\r");

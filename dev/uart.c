@@ -1,8 +1,11 @@
 #define GPACON		(*((volatile unsigned long *)0x7f008000))
 #define ULCON0  	(*((volatile unsigned long *)0x7f005000))
 #define UCON0		(*((volatile unsigned long *)0x7f005004))
+#define UFCON0          (*((volatile unsigned long *)0x7f005008))
+#define UMCON0          (*((volatile unsigned long *)0x7f00500c))
 
 #define UTRSTAT0        (*((volatile unsigned long *)0x7f005010))
+#define UFSTAT0         (*((volatile unsigned long *)0x7f005018))
 #define UTXH0           (*((volatile unsigned char *)0x7f005020))
 #define URXH0           (*((volatile unsigned char *)0x7f005024))
 
@@ -24,9 +27,13 @@ void uart_init(void)
 	//set UART model:polling mode
 	UCON0 |= ((0b01 << 0) | (0b01 << 2));
 	
+	UFCON0 = 0x01;
+
+	UMCON0 = 0x0;
+
 	//set UART baud rate, bps=115200
 	UBRDIV0 = (int)(PCLK / (BAUD * 16) -1);
-	UDIVSLOT0 = 0x0; 
+	UDIVSLOT0 = 0x1; 
 	
 	//set UART CLK : PCLK
 	UCON0 |= (0x00 << 10);
@@ -34,7 +41,7 @@ void uart_init(void)
 
 void uart_put_char(unsigned char c)
 {
-	while (!(UTRSTAT0 & (1 << 2))) ;
+	while (UFSTAT0 & (1 << 14)) ;	//if TX FIFO FULL,wait
 	UTXH0 = c;
 }
 
@@ -42,7 +49,7 @@ unsigned char uart_get_char(void)
 {
 	unsigned char c;
 
-	while (!(UTRSTAT0 & (1 << 0))) ;
+	while ((UFSTAT0 & 0x7f) == 0) ;
 	c = URXH0;
 
 	if ((c == 0x0d) || (c == 0x0a)) {

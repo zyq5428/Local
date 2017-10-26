@@ -1,6 +1,7 @@
 int uboot_main()
 {
 	int num;
+	int x;
 
 #ifdef MMU_ON
 	mmu_init();
@@ -15,7 +16,10 @@ int uboot_main()
 	irq_init();
 
 	led_on();
-	
+
+	lcd_init();
+	lcd_test();
+
 	dma_init();
 	dma_start();
 

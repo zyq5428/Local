@@ -10,6 +10,8 @@
 #define VIC0ADDRESS	((volatile unsigned long *)0x71200f00)
 #define VIC1ADDRESS     ((volatile unsigned long *)0x71300f00)
 
+extern const unsigned char gImage_image[];
+
 void key1_handle(void)
 {
 	__asm__ volatile (
@@ -21,9 +23,15 @@ void key1_handle(void)
 	
 	switch ( (*GPNDAT) & 0x3 ) {
 		case 0x2:		//key0
-			led_off(); break;
+			led_off();
+			clear_screen(0x0);
+			display_image(0,0,177,240,gImage_image);
+			 break;
 		case 0x1:		//key1
-			led_on(); break;
+			led_on(); 
+			clear_screen(0x0);
+			display_image(240,10,177,240,gImage_image);
+			break;
 		default:
 			break;
 	}

@@ -119,16 +119,6 @@ void lcd_control_init(void)
 	//set Window Palette 
 	WPALCON = 1; //window0 24-bit ( 8:8:8 )
 
-/*	VIDW00ADD0B0 = ((((unsigned long)LCDBUFFER)>>24)<<24) | (((unsigned long)LCDBUFFER)&0xffffff);
-
-	VIDW00ADD1B0 = (((unsigned long)LCDBUFFER)&0xffffff + 272*480*2);
-
-	VIDW00ADD2 = (0<<13) | ((480*2/2)<<0);
-
-	WIN0MAP = 0;
-
-	DITHMODE = (0<<7)|(2<<5)|(1<<3)|(2<<1)|(1<<0);
-*/
 }
 
 void lcd_enable(void)
@@ -172,18 +162,54 @@ void point(unsigned int x, unsigned int y, unsigned int color)
 	//LCD_FRAME_BUFF[y][x] = (unsigned long)((red << 16) | (green << 8) (blue << 0));
 }
 
-
-/*
-void point(unsigned int x,unsigned int y,unsigned int color)
+//const unsigned char gImage_image[45100]
+void display_image(unsigned int x, unsigned int y, unsigned int width, unsigned int height, const unsigned char image[])
 {
-    unsigned int red, green, blue;
-    
-    red = (color>>19) & 0x1f;
-    green = (color>>10) & 0x3f;
-    blue = (color>>3) & 0x1f;
-    LCDBUFFER[y][x] = (unsigned short)((red<<11)|(green<<5)|blue);  //5:6:5µÄ±ÈÀý
-}*/
+	int x0, y0;
 
+	int red, green, blue;
+
+	int color;
+
+	unsigned char *p = (unsigned char *)image;
+
+	for(y0 = y; y0 < (y + height); y0++) {
+		for (x0 = x; x0 < (x + width); x0++) {
+			blue = *p++;
+			green = *p++;
+			red = *p++;
+
+			color = ((red << 16) | (green << 8) | (blue << 0));
+
+			point(x0,y0,color);
+		}
+	}
+}
+
+void pure_color_on(unsigned color)
+{
+	WIN0MAP &= ~(0xffffff);
+	WIN0MAP |= (color & 0xffffff);
+	WIN0MAP |= (1 << 24);
+}
+
+void pure_color_off(void)
+{
+	WIN0MAP &= ~(0x1 << 24);
+}
+
+void clear_screen(unsigned int color)
+{
+	unsigned int x, y;
+
+	for(y = 0; y <= LINEVAL; y++) {
+		for(x = 0; x <=HOZVAL; x++) {
+			point(x,y,color);
+		}
+	}
+}
+
+extern const unsigned char gImage_image[];
 void lcd_test(void)
 {
 	int x;
@@ -192,5 +218,9 @@ void lcd_test(void)
 		point(x++,75,0xff0000);
 	}
 
+	display_image(0,0,177,240,gImage_image);
 
+	clear_screen(0x0);
+
+	display_image(240,10,177,240,gImage_image);
 }

@@ -42,10 +42,7 @@
 #define PAGEWIDTH_F_Win0 480
 
 
-
 unsigned long LCD_FRAME_BUFF[272][480];	//define frame buff
-unsigned short LCDBUFFER[272][480];
-
 
 void lcd_gpio_init(void)
 {
@@ -209,7 +206,7 @@ void clear_screen(unsigned int color)
 	}
 }
 
-extern const unsigned char gImage_image[];
+extern const unsigned char snow_image[];
 void lcd_test(void)
 {
 	int x;
@@ -218,9 +215,8 @@ void lcd_test(void)
 		point(x++,75,0xff0000);
 	}
 
-	display_image(0,0,177,240,gImage_image);
-
 	clear_screen(0x0);
 
-	display_image(240,10,177,240,gImage_image);
+	display_image(225,121,30,30,snow_image);
+
 }

@@ -10,7 +10,7 @@
 #define VIC0ADDRESS	((volatile unsigned long *)0x71200f00)
 #define VIC1ADDRESS     ((volatile unsigned long *)0x71300f00)
 
-extern const unsigned char gImage_image[];
+extern const unsigned char snow_image[];
 
 void key1_handle(void)
 {
@@ -25,12 +25,12 @@ void key1_handle(void)
 		case 0x2:		//key0
 			led_off();
 			clear_screen(0x0);
-			display_image(0,0,177,240,gImage_image);
+			display_image(0,0,30,30,snow_image);
 			 break;
 		case 0x1:		//key1
 			led_on(); 
 			clear_screen(0x0);
-			display_image(240,10,177,240,gImage_image);
+			display_image(450,242,30,30,snow_image);
 			break;
 		default:
 			break;

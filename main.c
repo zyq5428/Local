@@ -17,8 +17,10 @@ int uboot_main()
 
 	led_on();
 
+	ts_init();
+
 	lcd_init();
-	//lcd_test();
+	lcd_test();
 
 	dma_init();
 	dma_start();

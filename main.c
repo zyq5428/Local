@@ -2,6 +2,7 @@ int uboot_main()
 {
 	int num;
 	int x;
+	int count;
 
 #ifdef MMU_ON
 	mmu_init();
@@ -14,18 +15,38 @@ int uboot_main()
 	button_init_ext_int();
 
 	irq_init();
-
-	led_on();
+	
+	timer_2_init();
 
 	ts_init();
 
 	lcd_init();
-	lcd_test();
+
 
 	dma_init();
+	
+		
+	led4_off();
+	
 	dma_start();
-
+	
+	lcd_test();
+	
+	led_on();
+		
 	while(1) {
+		printf("\n Plese input timing time(s):");
+		scanf("%d", &count);
+		timer_2_timing(count);
+		
+		printf("\n Plese input delay time(s):");
+		scanf("%d", &count);
+		sdelay(count);
+		led4_xor();
+				
+		}
+
+	while(0) {
 		printf("\n*****************************\n\r");
 		printf("\n************U-Boot***********\n\r");
 		printf("[1]:Download Linux Kerel from TFTP server!\n\r");

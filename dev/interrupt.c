@@ -7,12 +7,17 @@
 
 #define VIC0INTENABLE   ((volatile unsigned long *)0x71200010)
 #define VIC0VECTADDR0   ((volatile unsigned long *)0x71200100)
+#define VIC0VECTADDR1   ((volatile unsigned long *)0x71200104)
+#define VIC0VECTADDR25  ((volatile unsigned long *)0x71200164)
+
 #define VIC0ADDRESS	((volatile unsigned long *)0x71200f00)
 #define VIC1ADDRESS     ((volatile unsigned long *)0x71300f00)
 
+#define TINT_CSTAT	(*((volatile unsigned long *)0x7F006044))
+
 extern const unsigned char snow_image[];
 
-void key1_handle(void)
+void eint0_3_handle(void)
 {
 	__asm__ volatile (
 		"sub lr, lr, #4\n"
@@ -20,6 +25,8 @@ void key1_handle(void)
 		:
 		:
 	);
+	
+	printf("\n\r into ext_interrupt 0~3 \n\r");
 	
 	switch ( (*GPNDAT) & 0x3 ) {
 		case 0x2:		//key0
@@ -39,6 +46,79 @@ void key1_handle(void)
 	*(EINT0PEND) = ~0x0;
 	*(VIC0ADDRESS) = 0;
 	*(VIC1ADDRESS) = 0;
+	
+	printf("\n\r exit ext_interrupt 0~3 \n\r");
+
+	__asm__ volatile (
+		"ldmfd sp!, {r0-r12, pc}^ \n"
+		:
+		:
+	);
+
+}
+
+void eint4_11_handle(void)
+{
+	__asm__ volatile (
+		"sub lr, lr, #4\n"
+		"stmfd sp!, {r0-r12, lr}\n"
+		:
+		:
+	);
+	
+	printf("\n into ext_interrupt 4~11 \n\r");
+	
+	switch ( (*GPNDAT) & (0x1 << 7) ) {
+		case 0b10000000:		//Eint7 is hight
+			
+			 break;
+		case 0x0:		//Eint7 is low
+			
+			break;
+		default:
+			break;
+	}
+
+	*(EINT0PEND) = ~0x0;
+	*(VIC0ADDRESS) = 0;
+	*(VIC1ADDRESS) = 0;
+	
+	printf("\n\r exit ext_interrupt 4~11 \n\r");
+
+	__asm__ volatile (
+		"ldmfd sp!, {r0-r12, pc}^ \n"
+		:
+		:
+	);
+
+}
+
+void timer_2_handle(void)
+{
+	__asm__ volatile (
+		"sub lr, lr, #4\n"
+		"stmfd sp!, {r0-r12, lr}\n"
+		:
+		:
+	);
+	
+	int n;
+	
+	n = TINT_CSTAT;
+	
+	printf("\n\r into timer_2 interrupt \n\r");
+	
+	printf("\n\r TINT_CSTAT is : %d \n\r", n);
+	
+	/*clear timer2 interrupt statu */
+	TINT_CSTAT |= (0x1 << 7);
+	
+	timer_2_int_isr();
+
+	*(VIC0ADDRESS) = 0;
+	*(VIC1ADDRESS) = 0;
+	
+	printf("\n\r exit timer_2 interrupt \n\r");
 
 	__asm__ volatile (
 		"ldmfd sp!, {r0-r12, pc}^ \n"
@@ -51,15 +131,27 @@ void key1_handle(void)
 void irq_init(void)
 {
 	//set GPN0,1 Falling edge triggered
-	*(EINT0CON0) = 0x2;
+	*(EINT0CON0) = (0x2 << 0);
+	
+	//set GPN 7 High level triggered (for eth)
+	*(EINT0CON0) &= ~(0x7 << 12);
+	*(EINT0CON0) |= (0x1 << 12);
+	
 
 	//chear EINT0MASK
 	*(EINT0MASK) = 0x0;
 
 	//enable EINT
-	*(VIC0INTENABLE) = 0x1;
+	*(VIC0INTENABLE) = ((0x1 << 0) | (0x1 << 1) | (0x1 << 25));
 
-	*(VIC0VECTADDR0) = (int)key1_handle;
+	//External interrupt 0 ~ 3
+	*(VIC0VECTADDR0) = (int)eint0_3_handle;
+	
+	//External interrupt 4 ~ 11
+	*(VIC0VECTADDR1) = (int)eint4_11_handle;
+	
+	//Timer 2 interrupt
+	*(VIC0VECTADDR25) = (int)timer_2_handle;
 
 	__asm__ volatile (
 		"mrc p15,0,r0,c1,c0,0\n"

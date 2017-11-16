@@ -1,19 +1,7 @@
-#define GPNDAT	((volatile unsigned long *)0x7f008834)
-#define GPNPUD  ((volatile unsigned long *)0x7f008838)
+#include "interrupt.h"
 
-#define EINT0CON0	((volatile unsigned long *)0x7f008900)
-#define EINT0MASK       ((volatile unsigned long *)0x7f008920)
-#define EINT0PEND       ((volatile unsigned long *)0x7f008924)
-
-#define VIC0INTENABLE   ((volatile unsigned long *)0x71200010)
-#define VIC0VECTADDR0   ((volatile unsigned long *)0x71200100)
-#define VIC0VECTADDR1   ((volatile unsigned long *)0x71200104)
-#define VIC0VECTADDR25  ((volatile unsigned long *)0x71200164)
-
-#define VIC0ADDRESS	((volatile unsigned long *)0x71200f00)
-#define VIC1ADDRESS     ((volatile unsigned long *)0x71300f00)
-
-#define TINT_CSTAT	(*((volatile unsigned long *)0x7F006044))
+#define GPNDAT		(*((volatile unsigned long *)0x7f008834))
+#define GPNPUD  	(*((volatile unsigned long *)0x7f008838))
 
 extern const unsigned char snow_image[];
 
@@ -28,7 +16,7 @@ void eint0_3_handle(void)
 	
 	printf("\n\r into ext_interrupt 0~3 \n\r");
 	
-	switch ( (*GPNDAT) & 0x3 ) {
+	switch ( GPNDAT & 0x3 ) {
 		case 0x2:		//key0
 			led_off();
 			clear_screen(0x0);
@@ -43,9 +31,9 @@ void eint0_3_handle(void)
 			break;
 	}
 
-	*(EINT0PEND) = ~0x0;
-	*(VIC0ADDRESS) = 0;
-	*(VIC1ADDRESS) = 0;
+	EINT0PEND = ~0x0;
+	VIC0ADDRESS = 0;
+	VIC1ADDRESS = 0;
 	
 	printf("\n\r exit ext_interrupt 0~3 \n\r");
 
@@ -68,7 +56,7 @@ void eint4_11_handle(void)
 	
 	printf("\n into ext_interrupt 4~11 \n\r");
 	
-	switch ( (*GPNDAT) & (0x1 << 7) ) {
+	switch ( GPNDAT & (0x1 << 7) ) {
 		case 0b10000000:		//Eint7 is hight
 			
 			 break;
@@ -79,9 +67,9 @@ void eint4_11_handle(void)
 			break;
 	}
 
-	*(EINT0PEND) = ~0x0;
-	*(VIC0ADDRESS) = 0;
-	*(VIC1ADDRESS) = 0;
+	EINT0PEND = ~0x0;
+	VIC0ADDRESS = 0;
+	VIC1ADDRESS = 0;
 	
 	printf("\n\r exit ext_interrupt 4~11 \n\r");
 
@@ -115,8 +103,8 @@ void timer_2_handle(void)
 	
 	timer_2_int_isr();
 
-	*(VIC0ADDRESS) = 0;
-	*(VIC1ADDRESS) = 0;
+	VIC0ADDRESS = 0;
+	VIC1ADDRESS = 0;
 	
 	printf("\n\r exit timer_2 interrupt \n\r");
 
@@ -131,27 +119,27 @@ void timer_2_handle(void)
 void irq_init(void)
 {
 	//set GPN0,1 Falling edge triggered
-	*(EINT0CON0) = (0x2 << 0);
+	EINT0CON0 = (0x2 << 0);
 	
 	//set GPN 7 High level triggered (for eth)
-	*(EINT0CON0) &= ~(0x7 << 12);
-	*(EINT0CON0) |= (0x1 << 12);
+	EINT0CON0 &= ~(0x7 << 12);
+	EINT0CON0 |= (0x1 << 12);
 	
 
 	//chear EINT0MASK
-	*(EINT0MASK) = 0x0;
+	EINT0MASK = 0x0;
 
 	//enable EINT
-	*(VIC0INTENABLE) = ((0x1 << 0) | (0x1 << 1) | (0x1 << 25));
+	VIC0INTENABLE = ((0x1 << 0) | (0x1 << 1) | (0x1 << 25));
 
 	//External interrupt 0 ~ 3
-	*(VIC0VECTADDR0) = (int)eint0_3_handle;
+	VIC0VECTADDR0 = (int)eint0_3_handle;
 	
 	//External interrupt 4 ~ 11
-	*(VIC0VECTADDR1) = (int)eint4_11_handle;
+	VIC0VECTADDR1 = (int)eint4_11_handle;
 	
 	//Timer 2 interrupt
-	*(VIC0VECTADDR25) = (int)timer_2_handle;
+	VIC0VECTADDR25 = (int)timer_2_handle;
 
 	__asm__ volatile (
 		"mrc p15,0,r0,c1,c0,0\n"

@@ -1,8 +1,16 @@
+int time,count;
+
+void input_time(void)
+{
+	printf("\n Plese input timing time(s):");
+	scanf("%d", &time);
+	printf("\n\r you input is %d s!\n\r", time);
+}
+
 int uboot_main()
 {
 	int num;
 	int x;
-	int count;
 
 #ifdef MMU_ON
 	mmu_init();
@@ -22,9 +30,7 @@ int uboot_main()
 
 	lcd_init();
 
-
-	dma_init();
-	
+	dma_init();	
 		
 	led4_off();
 	
@@ -32,13 +38,26 @@ int uboot_main()
 	
 	lcd_test();
 	
-	led_on();
+	led_off();
+	
+	input_time();
+	
+	count = 0;
 		
 	while(1) {
-		printf("\n Plese input timing time(s):");
-		scanf("%d", &count);
-		timer_2_timing(count);
+		if(!(count == time)) {
+			printf("\n\r count is : %d \n\r", count);
 		
+			printf("\n\r time is : %d \n\r", time);
+			
+			count = time;
+			timer_2_s(count);
+		} else
+			printf("\n\r The value you entered is the same as last time!!!\n\r");
+			input_time();
+		}
+
+	while(0) {		
 		printf("\n Plese input delay time(s):");
 		scanf("%d", &count);
 		sdelay(count);

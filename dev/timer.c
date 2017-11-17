@@ -27,60 +27,50 @@ void timer_2_timing(unsigned long usec)
 	/*Timer 2 Interrupt Enable. */
 	TINT_CSTAT |= (1 << 2);
 	
-	printf("\n\r Timer 2 Interrupt Enable\n\r");
+	//printf("\n\r Timer 2 Interrupt Enable\n\r");
 	
 	/*clear Timer Control Register */
 	TCON &= ~(0xf << 12);
 	
-	printf("\n\r clear Timer Control Register\n\r");
+	//printf("\n\r clear Timer Control Register\n\r");
 	
 	/*clear timer2 interrupt statu */
 	//TINT_CSTAT |= (0x1 << 7);
 	
-	f = TCNTB2;
+	/*f = TCNTB2;
 	printf("\n\r TCNTB2 is : %d \n\r", f);
 	m = TCNTO2;
-	printf("\n\r TCNTO2 is : %d \n\r", m);
+	printf("\n\r TCNTO2 is : %d \n\r", m);*/
 	
 	/*load count value */
 	TCNTB2 = n;
 	
-	printf("\n\r load count value\n\r");
+	/*printf("\n\r load count value\n\r");
 
 	f = TCNTB2;
 	printf("\n\r TCNTB2 is : %d \n\r", f);
 	m = TCNTO2;
-	printf("\n\r TCNTO2 is : %d \n\r", m);
+	printf("\n\r TCNTO2 is : %d \n\r", m);*/
 	
  	/*Timer 2 Auto Reload on */
 	TCON |= (0x1 << 15);
 	
-	printf("\n\r Timer 2 Auto Reload on\n\r");
+	/*printf("\n\r Timer 2 Auto Reload on\n\r");
 	
 	f = TCNTB2;
 	printf("\n\r TCNTB2 is : %d \n\r", f);
 	m = TCNTO2;
-	printf("\n\r TCNTO2 is : %d \n\r", m);
+	printf("\n\r TCNTO2 is : %d \n\r", m);*/
 	
 	/*Timer 2 Manual Update */
 	TCON |= (0x1 << 13);
 	
-	printf("\n\r Timer 2 Manual Update\n\r");
+	/*printf("\n\r Timer 2 Manual Update\n\r");
 	
 	f = TCNTB2;
 	printf("\n\r TCNTB2 is : %d \n\r", f);
 	m = TCNTO2;
-	printf("\n\r TCNTO2 is : %d \n\r", m);
-		
-	/*load count value */
-	TCNTB2 = n;
-	
-	printf("\n\r load count value\n\r");
-
-	f = TCNTB2;
-	printf("\n\r TCNTB2 is : %d \n\r", f);
-	m = TCNTO2;
-	printf("\n\r TCNTO2 is : %d \n\r", m);
+	printf("\n\r TCNTO2 is : %d \n\r", m);*/
 	
 	/*end Timer 2 Manual Update */
 	TCON &= ~(0x1 << 13);
@@ -88,20 +78,22 @@ void timer_2_timing(unsigned long usec)
 	/* Start Timer2 */
 	TCON |= (1 << 12);
 	
-	printf("\n\r Start Timer 2\n\r");
+	/*printf("\n\r Start Timer2\n\r");
 	
 	f = TCNTB2;
 	printf("\n\r TCNTB2 is : %d \n\r", f);
 	m = TCNTO2;
-	printf("\n\r TCNTO2 is : %d \n\r", m);
+	printf("\n\r TCNTO2 is : %d \n\r", m);*/
 
 	/*Timer 2 Auto Reload off */
 	TCON &= ~(0x1 << 15);
 	
+	/*printf("\n\r Timer 2 Auto Reload off\n\r");
+	
 	f = TCNTB2;
 	printf("\n\r TCNTB2 is : %d \n\r", f);
 	m = TCNTO2;
-	printf("\n\r TCNTO2 is : %d \n\r", m);
+	printf("\n\r TCNTO2 is : %d \n\r", m);*/
 
 }
 
@@ -124,16 +116,13 @@ int timer_2_int_isr(void)
 {
 	led_xor();
 	
-	input_time();
+	//input_time();
 
 	/* end Timer 2 */
 	TCON &= ~(1 << 12);
 	
 	/*Timer 2 Interrupt disable. */
 	TINT_CSTAT &= ~(1 << 2);
-
-	/*Timer 2 Auto Reload off */
-	TCON &= ~(0x1 << 15);
 	
 	return 0;
 }
@@ -144,39 +133,37 @@ void udelay(unsigned long usec)
 
 	n = usec;
 	
+	/*Timer 2 Interrupt disable. */
+	TINT_CSTAT &= ~(1 << 2);
+	
 	/*clear Timer Control Register */
 	TCON &= ~(0xf << 12);
 	
 	/*clear timer2 interrupt statu */
 	TINT_CSTAT |= (0x1 << 7);
 	
-	/*Timer 2 Auto Reload on */
-	TCON |= (0x1 << 15);
-	
 	/*load count value */
 	TCNTB2 = n;
+	
+	/*Timer 2 Auto Reload on */
+	TCON |= (0x1 << 15);
 
 	/*Timer 2 Manual Update */
 	TCON |= (0x1 << 13);
 	
 	/*end Timer 2 Manual Update */
 	TCON &= ~(0x1 << 13); 
-	
-	/*Timer 2 Interrupt disable. */
-	TINT_CSTAT &= ~(1 << 2);
 
 	/* Start Timer 2 */
 	TCON |= (1 << 12);
-
-
+	
+	/*Timer 2 Auto Reload off */
+	TCON &= ~(0x1 << 15);
 
 	while (!(TINT_CSTAT & (0x1 << 7))) ;
 
 	/*clear timer2 interrupt statu */
 	TINT_CSTAT |= (0x1 << 7);
-
-	/*Timer 2 Auto Reload off */
-	TCON &= ~(0x1 << 15);
 	
 	/* end Timer 2 */
 	TCON &= ~(1 << 12);

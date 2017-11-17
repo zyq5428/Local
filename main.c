@@ -44,7 +44,7 @@ int uboot_main()
 	
 	count = 0;
 		
-	while(1) {
+	while(0) {
 		if(!(count == time)) {
 			printf("\n\r count is : %d \n\r", count);
 		
@@ -52,17 +52,18 @@ int uboot_main()
 			
 			count = time;
 			timer_2_s(count);
-		} else
-			printf("\n\r The value you entered is the same as last time!!!\n\r");
-			input_time();
+		} else {
+			//printf("\n\r The value you entered is the same as last time!!!\n\r");
+			//input_time();
+			;
+		}
 		}
 
-	while(0) {		
+	while(1) {		
 		printf("\n Plese input delay time(s):");
 		scanf("%d", &count);
 		sdelay(count);
-		led4_xor();
-				
+		led4_xor();		
 		}
 
 	while(0) {

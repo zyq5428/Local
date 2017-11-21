@@ -30,7 +30,9 @@ int uboot_main()
 
 	lcd_init();
 
-	dma_init();	
+	dma_init();
+	
+	dm9000_init();	
 		
 	led4_off();
 	
@@ -40,9 +42,13 @@ int uboot_main()
 	
 	led_off();
 	
-	input_time();
+	//input_time();
 	
-	count = 0;
+	//count = 0;
+	
+	while (1) {
+		arp_request();
+		}
 		
 	while(0) {
 		if(!(count == time)) {
@@ -59,7 +65,7 @@ int uboot_main()
 		}
 		}
 
-	while(1) {		
+	while(0) {		
 		printf("\n Plese input delay time(s):");
 		scanf("%d", &count);
 		sdelay(count);

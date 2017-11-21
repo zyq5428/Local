@@ -2,6 +2,7 @@
  * dm9000 Ethernet
  */
 
+#ifdef CONFIG_DRIVER_DM9000
 
 #define DM9KS_DWORD_MODE		1
 #define DM9KS_BYTE_MODE		2
@@ -49,7 +50,6 @@ enum DM9KS_MAC_reg {
   DM9KS_EPAR	=	0x0c,
   DM9KS_EPDRL	=	0x0d,
   DM9KS_EPDRH	=	0x0e,
-  DM9KS_PAR	=	0x10,
   DM9KS_GPR	=	0x1f,	/* General purpose register */
   DM9KS_VID_L	=	0x28,
         DM9KS_VID_H	=	0x29,
@@ -185,4 +185,5 @@ enum Jam_Pattern_Time{
 #define IMR_TX_complete				(1<<1)
 #define IMR_RX_coming					1
 
+#endif
 

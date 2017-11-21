@@ -67,6 +67,8 @@ void eint4_11_handle(void)
 			break;
 	}
 
+	dm9000_int_isr();
+
 	EINT0PEND = ~0x0;
 	VIC0ADDRESS = 0;
 	VIC1ADDRESS = 0;

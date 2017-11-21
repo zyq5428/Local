@@ -7,8 +7,8 @@
 #define DM9000_IO		CONFIG_DM9000_BASE
 #define CONFIG_DM9000_USE_16BIT	1
 #define DM9000_BASE		CONFIG_DM9000_BASE
-#define DM9000_PPTR		(*((volatile unsigned long *)(DM9000_IO)))
-#define DM9000_PDATA		(*((volatile unsigned long *)(DM9000_DATA)))
+#define DM9000_PPTR		(*((volatile unsigned short *)(DM9000_IO)))
+#define DM9000_PDATA		(*((volatile unsigned short *)(DM9000_DATA)))
 
 #define SROM_BW			(*((volatile unsigned long *)0x70000000))
 #define SROM_BC1		(*((volatile unsigned long *)0x70000008))
@@ -38,15 +38,20 @@ unsigned char host_ip_addr[4] = {10,100,15,99};
 unsigned char ip_addr[4] = {10,100,15,202};
 unsigned short packet_len;
 
-
 void dm9000_cs_init(void)
 {
+	int SROM_BW_value, SROM_BC1_value;
+	
 	 //Data bus width control for Memory Bank1
-	 SROM_BW &= (~(0xf<<4));
-	 SROM_BW |= (0x1<<4);
+	SROM_BW &= (~(0xf<<4));
+	SROM_BW |= (0x1<<4);
+	SROM_BW_value = SROM_BW;
+	printf("\n\r SROM_BW_value is : %d \n\r", SROM_BW_value);	 
 
 	//SROM BANK CONTROL REGISTER
 	SROM_BC1 = ((DM9000_Tacs<<28)+(DM9000_Tcos<<24)+(DM9000_Tacc<<16)+(DM9000_Tcoh<<12)+(DM9000_Tah<<8)+(DM9000_Tacp<<4)+(DM9000_PMC));
+	SROM_BC1_value = SROM_BC1;
+	printf("\n\r SROM_BC1_value is : %d \n\r", SROM_BC1_value);
 }
 
 void dm9000_int_init(void)
@@ -154,7 +159,7 @@ void dm9000_init(void)
 	//reset dm9000
 	dm9000_reset();
 	
-	status = ior(DM9KS_NSR);
+	status = ior(DM9KS_BPTR);
 	printf("\n\r NSR register status is : %d\n\r",status);
 	
 	//capture dm9000

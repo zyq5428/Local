@@ -48,6 +48,7 @@ int uboot_main()
 	
 	while (1) {
 		arp_request();
+		sdelay(5);
 		}
 		
 	while(0) {

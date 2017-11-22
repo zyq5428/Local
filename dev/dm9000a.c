@@ -34,8 +34,12 @@ unsigned char * buffer = &arpbuf;
 
 unsigned char host_mac_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 unsigned char mac_addr[6] = {9,8,7,6,5,4};
-unsigned char host_ip_addr[4] = {10,100,15,99};
-unsigned char ip_addr[4] = {10,100,15,202};
+//unsigned char host_ip_addr[4] = {10,100,15,99};
+//unsigned char ip_addr[4] = {10,100,15,202};
+
+unsigned char host_ip_addr[4] = {192,168,1,100};
+unsigned char ip_addr[4] = {192,168,1,202};
+
 unsigned short packet_len;
 
 void dm9000_cs_init(void)

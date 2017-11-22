@@ -54,7 +54,7 @@ void eint4_11_handle(void)
 		:
 	);
 	
-	printf("\n into ext_interrupt 4~11 \n\r");
+	//printf("\n into ext_interrupt 4~11 \n\r");
 	
 	switch ( GPNDAT & (0x1 << 7) ) {
 		case 0b10000000:		//Eint7 is hight
@@ -73,7 +73,7 @@ void eint4_11_handle(void)
 	VIC0ADDRESS = 0;
 	VIC1ADDRESS = 0;
 	
-	printf("\n\r exit ext_interrupt 4~11 \n\r");
+	//printf("\n\r exit ext_interrupt 4~11 \n\r");
 
 	__asm__ volatile (
 		"ldmfd sp!, {r0-r12, pc}^ \n"

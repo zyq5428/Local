@@ -48,7 +48,9 @@ int uboot_main()
 	
 	while (1) {
 		arp_request();
+		//printf("\n\rsend arp request!\n\r");
 		sdelay(5);
+		//printf("\n\rdelay 5 s!\n\r");
 		}
 		
 	while(0) {

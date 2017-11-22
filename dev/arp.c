@@ -44,13 +44,15 @@ unsigned char arp_process(void)
 	printf("\n\r host ip is : ");
 	for (i = 0; i < 4; i++) {
 		printf("%03d", host_ip_addr[i]);
+		printf(".");
 		}
 	printf("\n\r");
 	
 	memcpy(host_mac_addr, arpbuf.smac, 6);
 	printf("\n\r host mac is : ");
 	for (i = 0; i < 6; i++) {
-		printf("%03d", host_ip_addr[i]);
+		printf("%02x", host_mac_addr[i]);
+		printf("-");
 		}
 	printf("\n\r");
 	

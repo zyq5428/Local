@@ -46,11 +46,9 @@ int uboot_main()
 	
 	//count = 0;
 	
-	while (1) {
-		arp_request();
-		//printf("\n\rsend arp request!\n\r");
+	while (0) {
 		sdelay(5);
-		//printf("\n\rdelay 5 s!\n\r");
+		led4_xor();
 		}
 		
 	while(0) {
@@ -75,7 +73,7 @@ int uboot_main()
 		led4_xor();		
 		}
 
-	while(0) {
+	while(1) {
 		printf("\n*****************************\n\r");
 		printf("\n************U-Boot***********\n\r");
 		printf("[1]:Download Linux Kerel from TFTP server!\n\r");
@@ -87,11 +85,14 @@ int uboot_main()
 
 		switch (num) {
 			case 1:
-				//tftp_load();
+				printf("\n\r now send tftp request \n\r");
+				tftp_send_request("main.c");
 				break;
 
 			case 2:
 				//boot_linux_arm();
+				printf("\n\r now send arp request \n\r");
+				arp_request();
 				break;
 
 			case 3:

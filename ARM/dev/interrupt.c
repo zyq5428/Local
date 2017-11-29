@@ -54,20 +54,23 @@ void eint4_11_handle(void)
 		:
 	);
 	
+	int flag;
+	
 	//printf("\n into ext_interrupt 4~11 \n\r");
 	
 	switch ( GPNDAT & (0x1 << 7) ) {
 		case 0b10000000:		//Eint7 is hight
-			
-			 break;
+			flag = get_arp_flag();
+			if (flag) {
+				dm9000_int_isr();
+			}
+			break;
 		case 0x0:		//Eint7 is low
 			
 			break;
 		default:
 			break;
 	}
-
-	dm9000_int_isr();
 
 	EINT0PEND = ~0x0;
 	VIC0ADDRESS = 0;

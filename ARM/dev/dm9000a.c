@@ -30,7 +30,7 @@
 #define DM9KS_DISINTR		IMR_SRAM_antoReturn
 
 
-unsigned char * buffer = &arpbuf;
+unsigned char buffer[1500];
 
 unsigned char host_mac_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 unsigned char mac_addr[6] = {9,8,7,6,5,4};
@@ -117,10 +117,10 @@ static void dm9000_capture (void)
 
 	 ID = GetDM9000ID();
 	 if ( ID != DM9000_ID) {
-		 printf("not found the dm9000 ID:%x\n",ID);
+		 printf("\n\rnot found the dm9000 ID:%x\n\r",ID);
 		 return;
 		 } else 
-		 printf("found DM9000 ID:%x\n",ID);
+		 printf("\n\rfound DM9000 ID:%x\n\r",ID);
 
 }
 
@@ -177,39 +177,53 @@ void dm9000_init(void)
 
 	//activate dm9000
 	dm9000_activate();
+	
+	/*disable interrupt */
+	iow(DM9KS_IMR, 0x80);
 }
 
 extern int eth_send (volatile unsigned char *packet, int length)
 {
 	int length1 = length;
 	int i;
+	
+	printf("\n\r eth_send \n\r");
 
+	printf("\n\r disable interrupt \n\r");
 	/*disable interrupt */
 	iow(DM9KS_IMR, 0x80);
 
+	printf("\n\r set packet length \n\r");
 	/* set packet length  */
 	iow(DM9KS_TXPLH, (length1 >> 8) & 0xff);
 	iow(DM9KS_TXPLL, length1 & 0xff);
 
+	printf("\n\r data copy \n\r");
 	DM9000_PPTR = DM9KS_MWCMD;/* data copy ready set */
 	for (i = 0; i < length; i += 2) {
 		DM9000_PDATA = packet[i] | (packet[i+1] << 8);
 	}
 
+	printf("\n\r start transmit \n\r");
 	/* start transmit */
 	iow(DM9KS_TCR, TCR_TX_Request);
 
+	printf("\n\r wait for tx complete \n\r");
 	/* wait for tx complete */
 	while (1) {
 		if (ior(DM9KS_NSR)& (NSR_TX2END|NSR_TX1END))
 			break;
 	}
 
+	printf("\n\r clear TX statu \n\r");
 	/*clear TX statu */
 	iow(DM9KS_NSR, 0x2c);
 
+	printf("\n\r enable rx interrupt \n\r");
 	/*enable rx interrupt */
 	iow(DM9KS_IMR, 0x81);
+	
+	//printf("\n\r eth_send end \n\r");
 
 	return 0;
 
@@ -219,9 +233,11 @@ extern int eth_send (volatile unsigned char *packet, int length)
 extern int eth_rx (unsigned char * data)
 {
 	u8 RxRead;
-	u8 status, len;
+	u16 status, len;
 	u16 tmp;
 	int i;
+	
+	//printf("\n\r receive eth packet \n\r");
 	
 	/*whether is rx interrupt,and clear interrupt statu */
 	RxRead = ior(DM9KS_MRCMDX);
@@ -249,18 +265,13 @@ extern int eth_rx (unsigned char * data)
 		}
 	}
 	
+	//printf("\n\receive eth packet end\n\r");
+	
 }
 
 void dm9000_int_isr(void)
 {
-	int i;
-	packet_len = eth_rx (buffer);
-	arp_process();
-}
-
-
-void dm9000_arp(void)
-{
-	while(1)
-		arp_request();	
+	packet_len = eth_rx (&buffer[0]);
+	
+	net_handle(&buffer[0], packet_len);
 }

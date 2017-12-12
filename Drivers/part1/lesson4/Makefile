@@ -1,4 +1,4 @@
-obj-m := queue.o
+obj-m := queue2.o
 
 KDIR := /home/S5-driver/lesson7/linux-ok6410
 

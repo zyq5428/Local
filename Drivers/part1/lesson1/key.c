@@ -4,8 +4,17 @@
 #include <linux/interrupt.h>
 #include <linux/fs.h>
 #include <linux/io.h>
+#include <linux/workqueue.h>
+#include <linux/slab.h>
 
 #define GPNCON	0x7f008830
+
+struct work_struct * work1;
+
+void work1_func(struct work_struct * work)
+{
+	printk(KERN_WARNING"key down!\n");
+}
 
 static irqreturn_t key_int(int irq, void *dev_id)
 {
@@ -13,8 +22,9 @@ static irqreturn_t key_int(int irq, void *dev_id)
 	
 	/*Clear key interrupts that have occurred(If it is a CPU internal interrupt (non-peripheral), the system will help clear) */
 	
-	printk(KERN_WARNING"key down!\n");
-	//printf("key down!\n");
+	/*Submit the bottom half */
+		/*queue work*/
+	schedule_work(work1);
 	
 	return 0;
 }
@@ -51,11 +61,17 @@ struct miscdevice key_miscdev = {
 static int key_init(void)
 {
 	printk(KERN_WARNING"key init\n");
+	
 	misc_register(&key_miscdev);
+	
+	request_irq(S3C_EINT(0), key_int, IRQF_TRIGGER_FALLING, "key", 0);
 	
 	key_hw_init();
 	
-	request_irq(S3C_EINT(0), key_int, IRQF_TRIGGER_FALLING, "key", 0);
+	/*init work*/
+	work1 = kmalloc(sizeof(struct work_struct), GFP_KERNEL);
+	
+	INIT_WORK(work1, work1_func);
 	
 	return 0;
 }
@@ -63,8 +79,10 @@ static int key_init(void)
 static void key_exit(void)
 {
 	printk(KERN_WARNING"key exit\n");
-	misc_deregister(&key_miscdev);
+	
 	free_irq(S3C_EINT(0), 0);
+	
+	misc_deregister(&key_miscdev);
 }
 
 

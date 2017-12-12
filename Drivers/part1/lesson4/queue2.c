@@ -3,7 +3,7 @@
 #include <linux/workqueue.h>
 #include <linux/slab.h>
 
-struct workqueue_struct * my_wq;
+//struct workqueue_struct * my_wq;
 struct work_struct * work1;
 struct work_struct * work2;
 
@@ -20,7 +20,7 @@ void work2_func(struct work_struct * work)
 static int queue_init(void)
 {
 	/*creat workqueue*/
-	my_wq = create_workqueue("my_wq");
+	//my_wq = create_workqueue("my_wq");
 
 	/*init work*/
 	work1 = kmalloc(sizeof(struct work_struct), GFP_KERNEL);
@@ -28,7 +28,7 @@ static int queue_init(void)
 	INIT_WORK(work1, work1_func);
 
 	/*queue work*/
-	queue_work(my_wq, work1);
+	schedule_work(work1);
 	
 	/*init work*/
 	work2 = kmalloc(sizeof(struct work_struct), GFP_KERNEL);
@@ -36,7 +36,7 @@ static int queue_init(void)
 	INIT_WORK(work2, work2_func);
 
 	/*queue work*/
-	queue_work(my_wq, work2);
+	schedule_work(work2);
 
 	return 0;
 }

@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <termios.h>
+#include <unistd.h>
+#include <time.h>
+#include <errno.h>
+#include <string.h>
+
+int main(void)
+{
+    int fd, i;
+    char buf[9];
+
+    //struct termios tio;
+
+    if ((fd = open("/dev/ttySAC3", O_RDWR | O_NDELAY | O_NOCTTY)) < 0) {
+	printf("could not open\n");
+	exit(1);
+    } else {
+	printf("file open success\n");
+    }
+/*
+    tio.c_cflag = B115200 | CS8 | CREAD | CLOCAL;
+    tio.c_cflag &= ~HUPCL;
+    tio.c_lflag = 0;
+    tio.c_iflag = IGNPAR;
+    tio.c_oflag = 0;
+    tio.c_cc[VTIME] = 0;
+    tio.c_cc[VMIN] = 0;
+
+    tcflush(fd, TCIFLUSH);
+    tcsetattr(fd, TCSANOW, &tio);
+    fcntl(fd, F_SETFL, FNDELAY);
+*/
+    while (1) {
+		i = read(fd, buf, 1);
+		//printf("recives is %s", buf);
+		if (i > 0) {
+	    write(fd, buf, 1);
+		}
+    }
+
+    close(fd);
+}

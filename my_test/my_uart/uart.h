@@ -18,6 +18,9 @@
 #define UART3_BASE	_ULCON3
 #define UART3_SIZE	(_UINTM3 - _ULCON3 + 4)
 
+
+#ifdef NO_POINT
+
 #define ULCON3 0x0
 #define UCON3 0x4
 #define UFCON3 0x8
@@ -31,5 +34,25 @@
 #define UINTP3 0x30
 #define UINTSP3 0x34
 #define UINTM3 0x38
+
+#else
+	
+#define ULCON3 0x0
+#define UCON3 0x1
+#define UFCON3 0x2
+
+#define UTRSTAT3 0x4
+#define UERSTAT3 0x5
+#define UFSTAT3 0x6
+
+#define UTXH3 0x8
+#define URXH3 0x9
+#define UBRDIV3 0xa
+#define UDIVSLOT3 0xb
+#define UINTP3 0xc
+#define UINTSP3 0xd
+#define UINTM3 0xe
+
+#endif
 
 #endif /* _UART_H */

@@ -86,70 +86,123 @@ short select_uart_div(int num)
 void io_test(void)
 {
 	unsigned int data;
+	unsigned int *gpb_dat;
+	
+	printk(KERN_WARNING"io test");
 	
 	/*set RXD3 and TXD3 output*/
+	printk(KERN_WARNING"uart_io addr is %x", uart_io);
 	data = readl(uart_io);
-	data &= ~(0xff << 8);					
-	data |= (0x11 << 8);
+	data &= ~(0xff << 8);
+	data |= (0x1 << 8) | (0x1 << 12);
 	writel(data, uart_io);
 	
+	/*read GPBCON register*/
+	data = readl(uart_io);
+	printk(KERN_WARNING"GPBCON value is %x", data);
+	
 	/*set RXD3 1 and TXD3 0*/
-	data = readl(uart_io + 4);
-	data &= ~(0xc << 8);					
-	data |= (0x4 << 8);
-	writel(data, uart_io + 4);
+	gpb_dat = uart_io + 4;
+	printk(KERN_WARNING"uart_io + 4 addr is %x", gpb_dat);
+	
+	gpb_dat = uart_io + 1;
+	printk(KERN_WARNING"uart_io + 1 addr is %x", gpb_dat);
+	
+	data = readl((uart_io + 1));
+	data |= (0xc << 0);
+	writel(data, (uart_io + 1));
 }
 
 void uart_hw_init(void)
 {
 	int int_enable = 0;
 	unsigned int data;
+	unsigned int *vaddr;
 	
 	printk(KERN_WARNING"uart init");
 	
 	/*io set RXD3 and TXD3*/
+	vaddr = uart_io + 0;
+	printk(KERN_WARNING"uart_io addr is %x", vaddr);
+	
 	data = readl(uart_io);
 	data &= ~(0xff << 8);					
 	data |= (0x22 << 8);
 	writel(data, uart_io);
 	
+	data = readl(uart_io);
+	printk(KERN_WARNING"GPBCON value is %x", data);
+	
 	/*UART line control registers*/
-	data = readl(uart_base + ULCON3);
+	vaddr = (uart_base + ULCON3);
+	printk(KERN_WARNING"ULCON3 addr is %x", vaddr);
+	
+	data = readl((uart_base + ULCON3));
 	data &= 0x0;
 	/*Normal mode,No parity,One stop bit per frame,8-bit Word Length*/
 	data |= (0x3 << 0);
-	writel(data, uart_base + ULCON3);
+	writel(data, (uart_base + ULCON3));
+	
+	data = readl((uart_base + ULCON3));
+	printk(KERN_WARNING"ULCON3 value is %x", data);
 
 	/*UART control registers*/
-	data = readl(uart_base + UCON3);
+	vaddr = (uart_base + UCON3);
+	printk(KERN_WARNING"UCON3 addr is %x", vaddr);
+	
+	data = readl((uart_base + UCON3));
 	data &= 0x0;
 	/*Select PCLK,TX Level,RX Pulse,Enable Rx time-out interrupts,Interrupt request or polling mode*/
 	data |= (0x0 << 10) | (0x1 << 9) | (0x0 << 8) | (0x1 << 7) | (0x1 << 2) | (0x1 << 0);
-	writel(data, uart_base + UCON3);
+	writel(data, (uart_base + UCON3));
+	
+	data = readl((uart_base + UCON3));
+	printk(KERN_WARNING"UCON3 value is %x", data);
 	
 	/*UART FIFO control registers*/
-	data = readl(uart_base + UFCON3);
+	vaddr = (uart_base + UFCON3);
+	printk(KERN_WARNING"UFCON3 addr is %x", vaddr);
+	
+	data = readl((uart_base + UFCON3));
 	data &= 0x0;
 	/*FIFO Disable*/
 	data |= 0;
-	writel(data, uart_base + UFCON3);
+	writel(data, (uart_base + UFCON3));
+	
+	data = readl((uart_base + UFCON3));
+	printk(KERN_WARNING"UFCON3 value is %x", data);
 	
 	/*Baud rate divisior register*/
-	data = readl(uart_base + UBRDIV3);
+	vaddr = (uart_base + UBRDIV3);
+	printk(KERN_WARNING"UBRDIV3 addr is %x", vaddr);
+	
+	data = readl((uart_base + UBRDIV3));
 	data &= 0x0;
 	/*set div*/
 	data |= UBRDIVn;
-	writel(data, uart_base + UBRDIV3);
+	writel(data, (uart_base + UBRDIV3));
+	
+	data = readl((uart_base + UBRDIV3));
+	printk(KERN_WARNING"UBRDIV3 value is %x", data);
 	
 	/*Baud rate divisior register*/
-	data = readl(uart_base + UDIVSLOT3);
+	vaddr = (uart_base + UDIVSLOT3);
+	printk(KERN_WARNING"UDIVSLOT3 addr is %x", vaddr);
+	
+	data = readl((uart_base + UDIVSLOT3));
 	data &= 0x0;
 	/*set div*/
 	data |= select_uart_div(UDIVSLOTn);
-	writel(data, uart_base + UDIVSLOT3);
+	writel(data, (uart_base + UDIVSLOT3));
 	
-	/*UART FIFO control registers*/
-	data = readl(uart_base + UINTM3);
+	data = readl((uart_base + UDIVSLOT3));
+	printk(KERN_WARNING"UDIVSLOT3 value is %x", data);
+	
+	/*UART MASK control registers*/
+	vaddr = (uart_base + UINTM3);
+	printk(KERN_WARNING"UINTM3 addr is %x", vaddr);
+	
+	data = readl((uart_base + UINTM3));
 	data &= 0x0;
 	if (int_enable)
 		/*Mask Modem interrupt,Mask Error interrupt*/
@@ -157,22 +210,31 @@ void uart_hw_init(void)
 	else
 		/*disable interrupt*/
 		data |= (0x1 << 3) | (0x1 << 2) | (0x1 << 1) | (0x1 << 0);
-	writel(data, uart_base + UINTM3);
+	writel(data, (uart_base + UINTM3));
+	
+	data = readl((uart_base + UINTM3));
+	printk(KERN_WARNING"UINTM3 value is %x", data);
 	
 	/*Interrupt pending register contains*/
-	data = readl(uart_base + UINTP3);
+	vaddr = (uart_base + UINTP3);
+	printk(KERN_WARNING"UINTP3 addr is %x", vaddr);
 	
-	printk(KERN_WARNING"UINTP3 value is %d", data);
+	data = readl((uart_base + UINTP3));	
+	
+	printk(KERN_WARNING"UINTP3 value is %x", data);
 	
 	data &= 0x0;
-	/*clear interrupt*/
+	/*clear interrupt states*/
 	data |= 0xf;
-	writel(data, uart_base + UDIVSLOT3);
+	writel(data, (uart_base + UINTP3));
 	
 	/*read UART TX/RX STATUS REGISTER initial state*/
-	data = readl(uart_base + UTRSTAT3);
+	vaddr = (uart_base + UTRSTAT3);
+	printk(KERN_WARNING"UDIVSLOT3 addr is %x", vaddr);
 	
-	printk(KERN_WARNING"UART TX/RX STATUS REGISTER initial value is %d", data);
+	data = readl((uart_base + UTRSTAT3));
+	
+	printk(KERN_WARNING"UART TX/RX STATUS REGISTER initial value is %x", data);
 	
 }
 
@@ -190,7 +252,7 @@ ssize_t uart_read (struct file * filp, char __user * buf, size_t size, loff_t * 
 	
 	printk(KERN_WARNING"uart read");
 	
-	data = readl(uart_base + UTRSTAT3);
+	data = readl((uart_base + UTRSTAT3));
 	
 	printk(KERN_WARNING"UTRSTAT3 value is %d", data);
 	
@@ -200,7 +262,7 @@ ssize_t uart_read (struct file * filp, char __user * buf, size_t size, loff_t * 
 		;
 	}
 	/*UART receiving buffer registers*/
-	rx_buf = readb(uart_base + URXH3);
+	rx_buf = readb((uart_base + URXH3));
 	copy_to_user(buf, &rx_buf, 1);
 		
 	return 1;
@@ -217,7 +279,7 @@ ssize_t uart_write (struct file * filp, const char __user * buf, size_t size, lo
 	
 	printk(KERN_WARNING"tx_buf value is %c", tx_buf);
 	
-	data = readl(uart_base + UTRSTAT3);
+	data = readl((uart_base + UTRSTAT3));
 	
 	printk(KERN_WARNING"UTRSTAT3 value is %d", data);
 	
@@ -228,7 +290,7 @@ ssize_t uart_write (struct file * filp, const char __user * buf, size_t size, lo
 		;
 	}*/
 	/*UART receiving buffer registers*/
-	writel(tx_buf, uart_base + UTXH3);
+	writel(tx_buf, (uart_base + UTXH3));
 		
 	return 1;
 }
@@ -275,14 +337,14 @@ static int uart_probe(struct platform_device * pdev)
 	
 	printk(KERN_WARNING"now is get irq resource");
 	
-	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-	request_irq(res_irq->start, uart_int, IRQF_TRIGGER_FALLING, "uart", (void *)1);
+	//res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+	request_irq(IRQ_UART3, uart_int, IRQF_TRIGGER_FALLING, "uart", (void *)1);
 	
 	/*init uart*/
-	printk(KERN_WARNING"now is get memory resource");
+	//printk(KERN_WARNING"now is get memory resource");
 	
-	addr_io_req = request_mem_region(GPBCON, GPB2_3_SIZE, "my-uart");
-
+	//addr_io_req = request_mem_region(GPBCON, GPB2_3_SIZE, "my-uart");
+/*
 	if (addr_io_req == NULL) {
 		printk(KERN_WARNING"cannot claim address io area\n");
 		release_mem_region(GPBCON, GPB2_3_SIZE);
@@ -306,20 +368,20 @@ static int uart_probe(struct platform_device * pdev)
 	if (addr_req == NULL) {
 		printk(KERN_WARNING"cannot claim address reg area\n");
 	}
-	
-	res_mem_io = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+*/	
+	//res_mem_io = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	//size = res_mem_io->end - res_mem_io->start + 1;
 	//uart_io = ioremap(res_mem_io->start, size);
-	uart_io = ioremap(res_mem_io->start, GPB2_3_SIZE);
+	uart_io = ioremap(GPBCON, GPB2_3_SIZE);
 	
-	res_mem_ctl = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+	//res_mem_ctl = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	//size = res_mem_ctl->end - res_mem_ctl->start + 1;
 	//uart_base = ioremap(res_mem_ctl->start, size);
-	uart_base = ioremap(res_mem_ctl->start, UART3_SIZE);
+	uart_base = ioremap(UART3_BASE, UART3_SIZE);
 	
-	io_test();
+	//io_test();
 	
-	//uart_hw_init();
+	uart_hw_init();
 	
 	printk(KERN_WARNING"init work");
 	

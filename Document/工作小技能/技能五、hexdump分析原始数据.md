@@ -618,3 +618,5 @@ hero@debian:/media/hero$ sudo dd if=/dev/sdb1 bs=4096 skip=9235 | hexdump -C -n 
 # 分析OK6410 SD卡启动
 
 > 将SD卡用**SD_Writer.exe** 制作为SD卡启动卡。
+> 
+> **经过多次尝试，S3C6410的SDHC卡BL1存放地址为Total_Block - 562处。**

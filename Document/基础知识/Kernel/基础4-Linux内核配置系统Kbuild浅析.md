@@ -25,7 +25,7 @@ Linux内核采用统一的代码基础，却可以在大到服务器，小到微
 
 > 创建一个目录结构如下，里面建立2个文件夹，其中include下必须手动建立config和generated文件夹，其中的文件都是自动生成的，不用考虑添加。scripts文件夹下的两个可执行文件拷贝自linux目录下的 **./scripts/kconfig/**。
 
-![Kbuild目录结构.png](./assets/Kbuild目录结构.png)
+![Kbuild目录结构](./assets/Kbuild目录结构.png)
 
 > 剩余需要手动添加的文件为**hello.c, Kconifg, Makefile, myprint.c**
 
